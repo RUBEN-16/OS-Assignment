@@ -3,6 +3,10 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
+
+// Basically we have to display the completion time, waiting time and turnaround time in form  of table and also Gantt chart 
+
+
 public class Table {
     private JLabel label;
     private JTable table;
@@ -16,10 +20,10 @@ public class Table {
         table = new JTable(tableModel);
         table.setFont(new Font("Consolas", Font.PLAIN, 16) );
         table.setRowHeight(30);
-
+        // Table header 
         JTableHeader tableHeader = table.getTableHeader();
         tableHeader.setFont(new Font("Consolas", Font.BOLD, 20));
-
+        // Cells
         DefaultTableCellRenderer cells = new DefaultTableCellRenderer();
         cells.setHorizontalAlignment(SwingConstants.CENTER);
         cells.setVerticalAlignment(SwingConstants.CENTER);
@@ -57,7 +61,7 @@ public class Table {
                 JOptionPane.showMessageDialog(label, "Minimum 3 Processes NEEDED to schedule!", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    // this function will be execute whenever u clicking the scheduling button 
     public void updateProcessData(){
         processes = new ArrayList<Process>();
         int numberRows = table.getRowCount();
@@ -68,12 +72,11 @@ public class Table {
                 String processName = table.getValueAt(i, 0).toString();
                 int burstTime = Integer.parseInt(table.getValueAt(i, 1).toString());
                 int arrivalTime = Integer.parseInt(table.getValueAt(i, 2).toString());
-                try {
+                try { // Priority is optional to input
                     priority = Integer.parseInt(table.getValueAt(i, 3).toString());
-                }catch(Exception ex){
-                }
-                process = new Process(processName, burstTime, arrivalTime, priority);
-                processes.add(process);
+                }catch(Exception ex){}
+                process = new Process(processName, burstTime, arrivalTime, priority); // Creating process objects 
+                processes.add(process); // Add all the processes into the list
             }
             for (Process p : processes){
                 System.out.println(p);

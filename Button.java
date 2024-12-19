@@ -4,24 +4,24 @@ import javax.swing.*;
 public class Button {
     private JLabel label;
     private Table table;
-    private String[] scheduling = {"Round Robin", "SRT", "SJN", "Preemptive Priority"};
+    private String[] scheduling = {"Round Robin", "SRT", "SJN", "Preemptive Priority"}; // Schedules
 
     public Button(Table tbl) {
         table = tbl;
         JButton buttonAddRow = new JButton("ADD ROW");
         buttonAddRow.setPreferredSize(new Dimension(150,50));
         buttonAddRow.setFocusable(false);
-        buttonAddRow.addActionListener(e -> {table.addRow();});
+        buttonAddRow.addActionListener(e -> {table.addRow();}); // Adding button actionListener (action will happen whenever u click that button)
 
         JButton buttonDeleteRow = new JButton("DELETE ROW");
         buttonDeleteRow.setPreferredSize(new Dimension(150,50));
         buttonDeleteRow.setFocusable(false);
-        buttonDeleteRow.addActionListener(e -> {table.deleteRow();});
+        buttonDeleteRow.addActionListener(e -> {table.deleteRow();}); // Deleting button actionListener (action will happen whenever u click that button)
 
         JComboBox buttonScheduling = new JComboBox(scheduling);
         buttonScheduling.setPreferredSize(new Dimension(150,50));
         buttonScheduling.setFocusable(false);
-        buttonScheduling.addActionListener(e -> {table.updateProcessData();});
+        buttonScheduling.addActionListener(e -> {table.updateProcessData();}); // Update button actionListener (action will happen whenever u click that button)
 
         //Create a label to hold the buttons
         label = new JLabel();
@@ -37,3 +37,7 @@ public class Button {
         return label;
     }
 }
+
+
+// Don't forget to add your algorithm in the buttons action listener to work 
+// Do your algorithms in the table class due easy access of list 

@@ -22,7 +22,9 @@ public class Process {
 
     public int getPriority() { return priority; }
     public void setPriority(int priority) { this.priority = priority; }
-
+    
+    
+    // To check the data in the terminal
     @Override
     public String toString() {
         return String.format("Process: %s, Burst Time: %d, Arrival Time: %d, Priority: %d",name, burstTime, arrivalTime, priority);
