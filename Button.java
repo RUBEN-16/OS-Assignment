@@ -33,7 +33,6 @@ public class Button {
 
     }
 
-    // Method to get the label
     public JLabel getLabelButton() {
         return label;
     }

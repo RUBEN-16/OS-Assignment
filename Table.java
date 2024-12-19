@@ -25,10 +25,9 @@ public class Table {
         cells.setVerticalAlignment(SwingConstants.CENTER);
         table.setDefaultRenderer(Object.class, cells);
         table.setShowGrid(true);
-        table.setGridColor(Color.LIGHT_GRAY); // Grid color
-        table.setSelectionForeground(Color.black); // Highlight text color for selection
+        table.setGridColor(Color.LIGHT_GRAY); 
+        table.setSelectionForeground(Color.black); 
 
-        // Wrap table in a scroll pane
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Create a label to hold the table
@@ -87,7 +86,7 @@ public class Table {
         }
             
     }
-    // Method to get the label
+    
     public JLabel getLabelTable() {
         return label;
     }

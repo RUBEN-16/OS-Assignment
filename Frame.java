@@ -16,7 +16,7 @@ public class Frame {
         frame.setResizable(true);
 
         // LABEL => Table
-        JLabel label0 = new JLabel(); // Use JPanel instead of JLabel
+        JLabel label0 = new JLabel(); 
         label0.setOpaque(true); 
         label0.setBackground(Color.white);
         label0.setPreferredSize(new Dimension(900, 0));
