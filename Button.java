@@ -23,7 +23,6 @@ public class Button {
         buttonScheduling.setFocusable(false);
         buttonScheduling.addActionListener(e -> {
             int selectedScheduling = buttonScheduling.getSelectedIndex();
-
             switch (selectedScheduling) {
                 case 0:
                     if(table.updateProcessData())
@@ -42,8 +41,6 @@ public class Button {
                     JOptionPane.showMessageDialog(null, "Invalid Scheduling Algorithm Selected");
                     break;
             }
-
-            
         }); // Update button actionListener (action will happen whenever u click that button)
 
         //Create a label to hold the buttons
@@ -53,7 +50,6 @@ public class Button {
         label.add(buttonAddRow);
         label.add(buttonDeleteRow);
         label.add(buttonScheduling);
-
     }
 
     public JLabel getLabelButton() {

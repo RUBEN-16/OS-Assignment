@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.util.*;
+import java.util.Queue;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -13,6 +15,7 @@ public class Table {
     private DefaultTableModel tableModel;
     private String[] columnNames = {"PROCESS", "ARRIVAL TIME", "BURST TIME", "PRIORITY"};
     private ArrayList<Process> processes;
+    private ArrayList<String> ganttChart;
     private Queue<Process> readyProcesses;
     private int totalProcess, lastAT, firstAT;
     final int minNumberColumns = 3;
@@ -139,7 +142,7 @@ public class Table {
     public void RoundRobin(){
         final int quantum = 3;
         int time = 0;
-        ArrayList<String> ganttChart = new ArrayList<>();
+        ganttChart = new ArrayList<>();
         readyProcesses = new LinkedList<>();
 
         sortAT(); // sorting process in the list in ascending order of AT
@@ -172,7 +175,7 @@ public class Table {
             }
             System.out.printf("%d ", time);
         }
-
+        
         // Display Gantt Chart
         System.out.println("");
         System.out.println(String.join(" | ", ganttChart));
@@ -187,70 +190,60 @@ public class Table {
         }
         
     }
+
+    // public void displayResults() {
+    //     // Create a JFrame to display the results
+    //     JFrame resultFrame = new JFrame("Scheduling Results");
+    //     resultFrame.setSize(800, 600);
+    //     resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    //     resultFrame.setLayout(new BorderLayout());
+
+    //     // Panel for Gantt Chart
+    //     JPanel ganttPanel = new JPanel();
+    //     ganttPanel.setBorder(BorderFactory.createTitledBorder("Gantt Chart"));
+    //     ganttPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
+    //     // Generate the Gantt Chart
+    //     for (String processName : ganttChart) {
+    //         JLabel label = new JLabel(processName);
+    //         label.setOpaque(true);
+    //         label.setBackground(Color.CYAN);
+    //         label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    //         label.setHorizontalAlignment(SwingConstants.CENTER);
+    //         label.setPreferredSize(new Dimension(60, 30));
+    //         ganttPanel.add(label);
+    //     }
+
+    //     // Panel for process table
+    //     JPanel tablePanel = new JPanel();
+    //     tablePanel.setBorder(BorderFactory.createTitledBorder("Process Details"));
+    //     tablePanel.setLayout(new BorderLayout());
+
+    //     // Create a JTable for CT, WT, and TAT
+    //     String[] tableColumns = {"Process", "Arrival Time", "Burst Time", "Completion Time", "Turnaround Time", "Waiting Time"};
+    //     Object[][] tableData = new Object[processes.size()][6];
+    //     for (int i = 0; i < processes.size(); i++) {
+    //         Process p = processes.get(i);
+    //         tableData[i][0] = p.getName();
+    //         tableData[i][1] = p.getArrivalTime();
+    //         tableData[i][2] = p.getInitialBurstTime();
+    //         tableData[i][3] = p.getCompletionTime();
+    //         tableData[i][4] = p.getTurnAroundTime();
+    //         tableData[i][5] = p.getWaitingTime();
+    //     }
+
+    //     JTable resultTable = new JTable(tableData, tableColumns);
+    //     resultTable.setFont(new Font("Consolas", Font.PLAIN, 14));
+    //     resultTable.setRowHeight(25);
+    //     JScrollPane tableScrollPane = new JScrollPane(resultTable);
+    //     tablePanel.add(tableScrollPane, BorderLayout.CENTER);
+
+    //     // Add components to the frame
+    //     resultFrame.add(ganttPanel, BorderLayout.NORTH);
+    //     resultFrame.add(tablePanel, BorderLayout.CENTER);
+
+    //     // Display the frame
+    //     resultFrame.setVisible(true);
+    // }    
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// public void RoundRobin() {
-//     final int quantum = 3;
-//     int time = 0;
-//     sortAT(); // Sort processes based on arrival time
-
-//     readyQueuing(time);
-//     ArrayList<String> ganttChart = new ArrayList<>();
-
-//     while (!readyProcesses.isEmpty() || processes.stream().anyMatch(p -> p.getBurstTime() > 0)) {
-//         readyQueuing(time);
-//         Process currentProcess = readyProcesses.poll();
-
-//         if (currentProcess != null) {
-//             ganttChart.add(currentProcess.getName());
-//             int remainingBurstTime = currentProcess.getBurstTime();
-//             if (remainingBurstTime <= quantum) {
-//                 time += remainingBurstTime;
-//                 currentProcess.setBurstTime(0); // Process completed
-//                 currentProcess.setCompletionTime(time);
-//                 currentProcess.setTurnAroundTime(currentProcess.getCompletionTime() - currentProcess.getArrivalTime());
-//                 currentProcess.setWaitingTime(currentProcess.getTurnAroundTime() - currentProcess.getInitialBurstTime());
-//             } else {
-//                 time += quantum;
-//                 currentProcess.setBurstTime(remainingBurstTime - quantum);
-//                 readyQueuing(time); // Check if new processes arrived
-//                 readyProcesses.add(currentProcess); // Re-queue the current process
-//             }
-//         } else {
-//             ganttChart.add("Idle");
-//             time++; // Increment time when idle
-//         }
-//     }
-
-//     // Display Gantt Chart
-//     System.out.println("Gantt Chart:");
-//     System.out.println(String.join(" | ", ganttChart));
-
-//     // Display process table with updated metrics
-//     System.out.println("\nProcess Details:");
-//     System.out.printf("%-10s%-15s%-15s%-15s%-15s%-15s%n", "Process", "Arrival Time", "Burst Time", "Completion Time", "TAT", "WT");
-//     for (Process p : processes) {
-//         System.out.printf("%-10s%-15d%-15d%-15d%-15d%-15d%n", p.getName(), p.getArrivalTime(), p.getInitialBurstTime(), 
-//                 p.getCompletionTime(), p.getTurnAroundTime(), p.getWaitingTime());
-//     }
-// }
