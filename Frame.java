@@ -48,6 +48,7 @@ public class Frame {
         panel2.setLayout(null);
         panel2.setBackground(Color.lightGray);
         panel2.setPreferredSize(new Dimension(0, 0));
+        
 
         frame.add(panel1, BorderLayout.NORTH);
         frame.add(panel2);

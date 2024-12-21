@@ -21,7 +21,10 @@ public class Button {
         JComboBox buttonScheduling = new JComboBox(scheduling);
         buttonScheduling.setPreferredSize(new Dimension(150,50));
         buttonScheduling.setFocusable(false);
-        buttonScheduling.addActionListener(e -> {table.updateProcessData();}); // Update button actionListener (action will happen whenever u click that button)
+        buttonScheduling.addActionListener(e -> {
+            table.updateProcessData();
+            table.RoundRobin();
+        }); // Update button actionListener (action will happen whenever u click that button)
 
         //Create a label to hold the buttons
         label = new JLabel();
