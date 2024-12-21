@@ -42,13 +42,22 @@ public class Table {
         label.add(scrollPane, BorderLayout.CENTER);
     }
 
+    public JLabel getLabelTable() {
+        return label;
+    }
+    public JTable getTable() {
+        return table;
+    }
+    public ArrayList<Process> getList() {
+        return processes;
+    }
+
     public void addRow(){
         int totalRows = table.getRowCount();
             if(totalRows < 10){
                 tableModel.addRow(new Object[]{"", "", "", ""});
             }else
                 JOptionPane.showMessageDialog(label, "Maximum 10 Processes only can schedule!", "ERROR", JOptionPane.ERROR_MESSAGE);
-        
     }
 
     public void deleteRow(){
@@ -63,8 +72,9 @@ public class Table {
                 JOptionPane.showMessageDialog(label, "Minimum 3 Processes NEEDED to schedule!", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     // this function will be execute whenever u clicking the scheduling button 
-    public void updateProcessData(){
+    public boolean updateProcessData(){ 
         processes = new ArrayList<Process>();
         int numberRows = table.getRowCount();
         try {
@@ -81,22 +91,19 @@ public class Table {
                 processes.add(process); // Add all the processes into the list
             }
             totalProcess = processes.size();
-            for (Process p : processes){
-                System.out.println(p);
-            }
+            return true;
         } catch (Exception e){
             if(numberRows == 3)
                 JOptionPane.showMessageDialog(label, "Input the 3 processes details minimum in the table!", "ERROR", JOptionPane.ERROR_MESSAGE);
             else
                 JOptionPane.showMessageDialog(label, "Remove the empty row!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            
+            return false;
         }
             
     }
-    public JLabel getLabelTable() {return label;}
-    public JTable getTable() {return table;}
-    public ArrayList<Process> getList() {return processes;}
 
-    public void sortAT(){ // sorting Array processes based on their arrival time
+    private void sortAT(){ // sorting ArrayList processes based on their arrival time
         int iteration = totalProcess-1;
         for(int i = 0; i < totalProcess; i++){
             for(int j = 0; j < iteration; j++){
@@ -119,7 +126,7 @@ public class Table {
         System.out.printf("Number of processes: %d", totalProcess);
     }
 
-    private void readyQueuing(int T){
+    private void readyQueuing(int T){ // Adding Queue 
         for(Process prs: processes){
             if(prs.getArrivalTime() <= T && !readyProcesses.contains(prs) && prs.getBurstTime() > 0){
                 readyProcesses.add(prs);
@@ -128,12 +135,15 @@ public class Table {
         }
     }
 
+    // Round Robin Scheduling (Quantum = 3)
     public void RoundRobin(){
         final int quantum = 3;
         int time = 0;
-        sortAT(); // sorting process in the list in ascending order of AT
         ArrayList<String> ganttChart = new ArrayList<>();
         readyProcesses = new LinkedList<>();
+
+        sortAT(); // sorting process in the list in ascending order of AT
+        
         System.out.printf("%n      %d ", time);
         while(processes.stream().anyMatch(p -> p.getBurstTime() > 0)){
             readyQueuing(time);  
@@ -167,12 +177,13 @@ public class Table {
         System.out.println("");
         System.out.println(String.join(" | ", ganttChart));
 
-        // Display process table with updated metrics
+        // Display process table with updated TAT, CT and WT
         System.out.println("\nProcess Details:");
         System.out.printf("%-10s%-15s%-15s%-15s%-15s%-15s%n", "Process", "Arrival Time", "Burst Time", "Completion Time", "TAT", "WT");
         for (Process p : processes) {
-            System.out.printf("%-10s%-15d%-15d%-15d%-15d%-15d%n", p.getName(), p.getArrivalTime(), p.getInitialBurstTime(), 
-                    p.getCompletionTime(), p.getTurnAroundTime(), p.getWaitingTime());
+            System.out.printf("%-10s%-15d%-15d%-15d%-15d%-15d%n", 
+            p.getName(), p.getArrivalTime(), p.getInitialBurstTime(), p.getCompletionTime(), 
+            p.getTurnAroundTime(), p.getWaitingTime());
         }
         
     }

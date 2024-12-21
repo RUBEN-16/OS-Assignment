@@ -4,7 +4,7 @@ import javax.swing.*;
 public class Button {
     private JLabel label;
     private Table table;
-    private String[] scheduling = {"Round Robin", "SRT", "SJN", "Preemptive Priority"}; // Schedules
+    private String[] scheduling = {"Round Robin", "SRT", "SJN", "Non-Preemptive Priority"}; // Schedules
 
     public Button(Table tbl) {
         table = tbl;
@@ -18,12 +18,32 @@ public class Button {
         buttonDeleteRow.setFocusable(false);
         buttonDeleteRow.addActionListener(e -> {table.deleteRow();}); // Deleting button actionListener (action will happen whenever u click that button)
 
-        JComboBox buttonScheduling = new JComboBox(scheduling);
+        JComboBox buttonScheduling = new JComboBox<>(scheduling);
         buttonScheduling.setPreferredSize(new Dimension(150,50));
         buttonScheduling.setFocusable(false);
         buttonScheduling.addActionListener(e -> {
-            table.updateProcessData();
-            table.RoundRobin();
+            int selectedScheduling = buttonScheduling.getSelectedIndex();
+
+            switch (selectedScheduling) {
+                case 0:
+                    if(table.updateProcessData())
+                        table.RoundRobin();
+                    break;
+                case 1:
+                    JOptionPane.showMessageDialog(null, "SRT - Dharven", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                    break;
+                case 2:
+                    JOptionPane.showMessageDialog(null, "SJN - Enoch", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                    break;
+                case 3:
+                    JOptionPane.showMessageDialog(null, "Non-Preemptive Priority - Daniel", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Invalid Scheduling Algorithm Selected");
+                    break;
+            }
+
+            
         }); // Update button actionListener (action will happen whenever u click that button)
 
         //Create a label to hold the buttons
