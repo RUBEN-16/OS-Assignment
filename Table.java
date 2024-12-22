@@ -126,7 +126,7 @@ public class Table {
         for(Process prs: processes){
             System.out.println(prs);
         }
-        System.out.printf("Number of processes: %d", totalProcess);
+        // System.out.printf("Number of processes: %d", totalProcess);
     }
 
     private void readyQueuing(int T){ // Adding Queue 
@@ -176,6 +176,9 @@ public class Table {
             }
             processTimings.add(String.valueOf(time));
         }
+        // for(String t: processTimings){
+        //     System.out.printf("%s ", t);
+        // }
         displayResults();
         
         // // Display Gantt Chart in terminal
@@ -196,7 +199,7 @@ public class Table {
     public void displayResults() {
         // Create a JFrame to display the results
         JFrame resultFrame = new JFrame("Scheduling Results");
-        resultFrame.setSize(800, 600);
+        resultFrame.setSize(1200,438);
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         resultFrame.setLayout(new BorderLayout());
     
@@ -240,7 +243,6 @@ public class Table {
         finalTimeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         finalTimeLabel.setPreferredSize(new Dimension(60, 20));
         timingPanel.add(finalTimeLabel);
-    
         // Add sub-panels to Gantt Chart panel
         ganttPanel.add(processPanel);
         ganttPanel.add(timingPanel);

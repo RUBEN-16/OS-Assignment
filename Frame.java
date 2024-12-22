@@ -11,9 +11,9 @@ public class Frame {
 
         JFrame frame = new JFrame("CPU Scheduling");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200,800);
+        frame.setSize(1200,438);
         frame.setIconImage(img.getImage());
-        frame.setResizable(true);
+        frame.setResizable(false);
 
         // LABEL => Table
         JLabel label0 = new JLabel(); 
@@ -36,22 +36,14 @@ public class Frame {
         label.add(btn.getLabelButton());
         label.add(label0, BorderLayout.WEST);
 
-        // PANEL => INPUT
         JPanel panel1 = new JPanel();
         panel1.setLayout(new BorderLayout());
         panel1.setBackground(Color.white);
         panel1.setPreferredSize(new Dimension(0, 400));
         panel1.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         panel1.add(label);
-        // PANEL => OUTPUT
-        JPanel panel2 = new JPanel();
-        panel2.setLayout(null);
-        panel2.setBackground(Color.lightGray);
-        panel2.setPreferredSize(new Dimension(0, 0));
         
-
-        frame.add(panel1, BorderLayout.NORTH);
-        frame.add(panel2);
+        frame.add(panel1);
         frame.setVisible(true);
     }
 
