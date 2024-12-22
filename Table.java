@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.Queue;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class Table {
     private String[] columnNames = {"PROCESS", "ARRIVAL TIME", "BURST TIME", "PRIORITY"};
     private ArrayList<Process> processes;
     private ArrayList<String> ganttChart, processTimings;
-    private Queue<Process> readyProcesses;
+    private List<Process> readyProcesses;
     private int totalProcess, lastAT, firstAT;
     final int minNumberColumns = 3;
     
@@ -138,6 +139,25 @@ public class Table {
         }
     }
 
+    private void queuePriority(){ // Adding Queue 
+        System.out.printf("Before:  [");
+        for(Process prs: readyProcesses){
+            System.out.printf("%s, ", prs.getName());
+        }
+        System.out.printf("]%n");
+        readyProcesses.sort((p1, p2) -> {
+            if (p1.getArrivalTime() == p2.getArrivalTime()) {
+                return Integer.compare( p1.getPriority(), p2.getPriority());
+            }
+            return 0;
+        });
+        System.out.printf("After:  [");
+        for(Process prs: readyProcesses){
+            System.out.printf("%s = %d, ", prs.getName(), prs.getArrivalTime());
+        }
+        System.out.printf("]%n");
+    }
+
     // Round Robin Scheduling (Quantum = 3)
     public void RoundRobin(){
         final int quantum = 3;
@@ -147,27 +167,31 @@ public class Table {
         readyProcesses = new LinkedList<>();
         
         sortAT(); // sorting process in the list in ascending order of AT
-        
+        readyQueuing(time); 
+        queuePriority(); 
+
         processTimings.add(String.valueOf(time));
         while(processes.stream().anyMatch(p -> p.getBurstTime() > 0)){
-            readyQueuing(time);  
-            Process currentProcess = readyProcesses.peek();
+            
+            Process currentProcess = readyProcesses.get(0);
             if(currentProcess != null){
                 ganttChart.add(currentProcess.getName());
                 int remainingBurstTime = currentProcess.getBurstTime();
                 if(remainingBurstTime <= quantum){
                     time += remainingBurstTime;
                     currentProcess.setBurstTime(0);
-                    readyQueuing(time);
                     currentProcess.setCompletionTime(time);
                     currentProcess.setTurnAroundTime(currentProcess.getCompletionTime() - currentProcess.getArrivalTime());
                     currentProcess.setWaitingTime(currentProcess.getTurnAroundTime() - currentProcess.getInitialBurstTime());
-                    readyProcesses.poll();
+                    readyQueuing(time);
+                    readyProcesses.remove(0);
+                    queuePriority();
                 }else{
                     time += quantum;
                     currentProcess.setBurstTime(remainingBurstTime - quantum);
                     readyQueuing(time);
-                    readyProcesses.poll();
+                    readyProcesses.remove(0);
+                    queuePriority();
                     readyProcesses.add(currentProcess);
                 }
             }else{
@@ -181,7 +205,7 @@ public class Table {
         // }
         displayResults();
         
-        // // Display Gantt Chart in terminal
+        // // Display Gantt Chart in terminal (use when u want to check)
         // System.out.println("");
         // System.out.println(String.join(" | ", ganttChart));
 
