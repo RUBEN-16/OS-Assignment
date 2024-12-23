@@ -2,8 +2,6 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Frame {
-    private String process;
-    private int burstTime, arrivalTime, priority;
     private Table table;
 
     public Frame() {
@@ -13,6 +11,7 @@ public class Frame {
         JFrame frame = new JFrame("CPU Scheduling");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1500, 700);
+        frame.setLocationRelativeTo(null);
         frame.setIconImage(img.getImage());
         frame.setResizable(true);
 

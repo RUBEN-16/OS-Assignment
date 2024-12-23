@@ -39,7 +39,7 @@ public class Table {
 
         // Table header
         JTableHeader tableHeader = table.getTableHeader();
-        tableHeader.setFont(new Font("Arial", Font.BOLD, 18));
+        tableHeader.setFont(new Font("Arial", Font.PLAIN, 18));
         tableHeader.setBackground(new Color(135, 206, 250)); // Light Blue
         tableHeader.setForeground(Color.BLACK);
 
@@ -240,10 +240,13 @@ public class Table {
     
     public void displayResults() {
         // Create a JFrame to display the results
+        ImageIcon img = new ImageIcon("CPU.png");
         JFrame resultFrame = new JFrame("Scheduling Results");
-        resultFrame.setSize(1200, 438);
+        resultFrame.setSize(1500, 700);
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         resultFrame.setLayout(new BorderLayout());
+        resultFrame.setIconImage(img.getImage());
+        resultFrame.setLocationRelativeTo(null);
     
         // Panel for Gantt Chart
         JPanel ganttPanel = new JPanel();
