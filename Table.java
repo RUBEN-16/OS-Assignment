@@ -1,14 +1,9 @@
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-
 import javax.swing.*;
 import javax.swing.table.*;
-
-
-// Basically we have to display the completion time, waiting time and turnaround time in form  of table and also Gantt chart 
-
 
 public class Table {
     private JLabel label;
@@ -20,24 +15,47 @@ public class Table {
     private List<Process> readyProcesses;
     private int totalProcess, lastAT, firstAT;
     final int minNumberColumns = 3;
-    
+
     public Table() {
         tableModel = new DefaultTableModel(columnNames, minNumberColumns);
-        table = new JTable(tableModel);
-        table.setFont(new Font("Consolas", Font.PLAIN, 16) );
-        table.setRowHeight(30);
-        // Table header 
-        JTableHeader tableHeader = table.getTableHeader();
-        tableHeader.setFont(new Font("Consolas", Font.BOLD, 20));
-        // Cells
-        DefaultTableCellRenderer cells = new DefaultTableCellRenderer();
-        cells.setHorizontalAlignment(SwingConstants.CENTER);
-        cells.setVerticalAlignment(SwingConstants.CENTER);
-        table.setDefaultRenderer(Object.class, cells);
-        table.setShowGrid(true);
-        table.setGridColor(Color.LIGHT_GRAY); 
-        table.setSelectionForeground(Color.black); 
+        table = new JTable(tableModel) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
 
+                // Alternate row color
+                if (!isRowSelected(row)) {
+                    c.setBackground(row % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE);
+                } else {
+                    c.setBackground(new Color(173, 216, 230)); // Highlight selected row
+                }
+                return c;
+            }
+        };
+
+        // Font and Row Height
+        table.setFont(new Font("Arial", Font.PLAIN, 16));
+        table.setRowHeight(50);
+
+        // Table header
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setFont(new Font("Arial", Font.BOLD, 18));
+        tableHeader.setBackground(new Color(135, 206, 250)); // Light Blue
+        tableHeader.setForeground(Color.BLACK);
+
+        // Cells
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+        cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        cellRenderer.setVerticalAlignment(SwingConstants.CENTER);
+        table.setDefaultRenderer(Object.class, cellRenderer);
+        table.setShowGrid(true);
+        table.setGridColor(new Color(211, 211, 211)); // Light Gray Grid
+
+        // Tooltips
+        table.setToolTipText("Enter process details here");
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+
+        // ScrollPane
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Create a label to hold the table
@@ -49,40 +67,38 @@ public class Table {
     public JLabel getLabelTable() {
         return label;
     }
+
     public JTable getTable() {
         return table;
     }
-    public ArrayList<Process> getList() {
-        return processes;
-    }
 
-    public void addRow(){
+    public void addRow() {
         int totalRows = table.getRowCount();
-            if(totalRows < 10){
-                tableModel.addRow(new Object[]{"", "", "", ""});
-            }else
-                JOptionPane.showMessageDialog(label, "Maximum 10 Processes only can schedule!", "ERROR", JOptionPane.ERROR_MESSAGE);
+        if (totalRows < 10) {
+            tableModel.addRow(new Object[]{"", "", "", ""});
+        } else {
+            JOptionPane.showMessageDialog(label, "Maximum 10 Processes only can schedule!", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    public void deleteRow(){
+    public void deleteRow() {
         int selectedRow = table.getSelectedRow();
-        if (selectedRow == -1){
+        if (selectedRow == -1) {
             JOptionPane.showMessageDialog(label, "Please select a row to DELETE!", "INFO", JOptionPane.INFORMATION_MESSAGE);
-        }else{
+        } else {
             int totalRows = table.getRowCount();
-            if(totalRows > 3)
+            if (totalRows > 3)
                 tableModel.removeRow(selectedRow);
             else
                 JOptionPane.showMessageDialog(label, "Minimum 3 Processes NEEDED to schedule!", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // this function will be execute whenever u clicking the scheduling button 
-    public boolean updateProcessData(){ 
-        processes = new ArrayList<Process>();
+    public boolean updateProcessData() {
+        processes = new ArrayList<>();
         int numberRows = table.getRowCount();
         try {
-            for(int i = 0 ; i < numberRows; i++){
+            for (int i = 0; i < numberRows; i++) {
                 int priority = 0;
                 Process process;
                 String processName = table.getValueAt(i, 0).toString();
@@ -90,21 +106,19 @@ public class Table {
                 int burstTime = Integer.parseInt(table.getValueAt(i, 2).toString());
                 try { // Priority is optional to input
                     priority = Integer.parseInt(table.getValueAt(i, 3).toString());
-                }catch(Exception ex){}
+                } catch (Exception ex) {}
                 process = new Process(processName, arrivalTime, burstTime, priority); // Creating process objects 
                 processes.add(process); // Add all the processes into the list
             }
             totalProcess = processes.size();
             return true;
-        } catch (Exception e){
-            if(numberRows == 3)
+        } catch (Exception e) {
+            if (numberRows == 3)
                 JOptionPane.showMessageDialog(label, "Input the 3 processes details minimum in the table!", "ERROR", JOptionPane.ERROR_MESSAGE);
             else
                 JOptionPane.showMessageDialog(label, "Remove the empty row!", "ERROR", JOptionPane.ERROR_MESSAGE);
-            
             return false;
         }
-            
     }
 
     private void sortAT(){ // sorting ArrayList processes based on their arrival time
@@ -137,25 +151,28 @@ public class Table {
                 // System.out.println("Added process: " + prs.getName() + " at time " + T);
             }
         }
+        // CHECKING PURPOSES
+        // System.out.printf("Before:  [");
+        // for(Process prs: readyProcesses){
+        //     System.out.printf("%s = %d, ", prs.getName(), prs.getBurstTime());
+        // }
+        // System.out.printf("]%n");
     }
 
     private void queuePriority(){ // Adding Queue 
-        System.out.printf("Before:  [");
-        for(Process prs: readyProcesses){
-            System.out.printf("%s, ", prs.getName());
-        }
-        System.out.printf("]%n");
+        
         readyProcesses.sort((p1, p2) -> {
             if (p1.getArrivalTime() == p2.getArrivalTime()) {
                 return Integer.compare( p1.getPriority(), p2.getPriority());
             }
             return 0;
         });
-        System.out.printf("After:  [");
-        for(Process prs: readyProcesses){
-            System.out.printf("%s = %d, ", prs.getName(), prs.getArrivalTime());
-        }
-        System.out.printf("]%n");
+        // CHECKING PURPOSES
+        // System.out.printf("After:  [");
+        // for(Process prs: readyProcesses){
+        //     System.out.printf("%s = %d, ", prs.getName(), prs.getBurstTime());
+        // }
+        // System.out.printf("]%n");
     }
 
     // Round Robin Scheduling (Quantum = 3)
@@ -172,9 +189,8 @@ public class Table {
 
         processTimings.add(String.valueOf(time));
         while(processes.stream().anyMatch(p -> p.getBurstTime() > 0)){
-            
-            Process currentProcess = readyProcesses.get(0);
-            if(currentProcess != null){
+            if(!readyProcesses.isEmpty()){
+                Process currentProcess = readyProcesses.get(0);
                 ganttChart.add(currentProcess.getName());
                 int remainingBurstTime = currentProcess.getBurstTime();
                 if(remainingBurstTime <= quantum){
@@ -197,6 +213,8 @@ public class Table {
             }else{
                 ganttChart.add("IDLE");
                 time++;
+                readyQueuing(time); 
+                queuePriority(); 
             }
             processTimings.add(String.valueOf(time));
         }
@@ -223,13 +241,16 @@ public class Table {
     public void displayResults() {
         // Create a JFrame to display the results
         JFrame resultFrame = new JFrame("Scheduling Results");
-        resultFrame.setSize(1200,438);
+        resultFrame.setSize(1200, 438);
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         resultFrame.setLayout(new BorderLayout());
     
         // Panel for Gantt Chart
         JPanel ganttPanel = new JPanel();
-        ganttPanel.setBorder(BorderFactory.createTitledBorder("Gantt Chart"));
+        ganttPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("Gantt Chart"),
+            BorderFactory.createEmptyBorder(10, 0, 0, 0)
+        ));
         ganttPanel.setLayout(new BoxLayout(ganttPanel, BoxLayout.Y_AXIS));
     
         // Sub-panel for process blocks
@@ -239,37 +260,67 @@ public class Table {
         // Sub-panel for timings
         JPanel timingPanel = new JPanel();
         timingPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        timingPanel.setPreferredSize(new Dimension(0, 40));
+    
         // Generate the Gantt Chart
+        JLabel emptyLabelStart = new JLabel();
+        emptyLabelStart.setPreferredSize(new Dimension(5, 30));
+        processPanel.add(emptyLabelStart);
+    
         int currentTime = 0; // Start time for the first block
         for (String processName : ganttChart) {
+            int processedTime = Integer.parseInt(processTimings.get(currentTime + 1)) - Integer.parseInt(processTimings.get(currentTime));
+    
             // Create label for process block
-            
             JLabel processLabel = new JLabel(processName);
             processLabel.setOpaque(true);
-            processLabel.setBackground(Color.CYAN);
-            processLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            processLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK),
+                BorderFactory.createEmptyBorder(10, 0, 0, 0)
+            ));
             processLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            processLabel.setPreferredSize(new Dimension(60, 30));
-            processPanel.add(processLabel);
-            
+            processLabel.setFont(new Font("Consolas", Font.PLAIN, 20));
+    
             // Create label for timing below the block
-            JLabel timeLabel = new JLabel(processTimings.get(currentTime)); //
+            JLabel timeLabel = new JLabel(processTimings.get(currentTime));
             timeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-            timeLabel.setPreferredSize(new Dimension(60, 20));
+            timeLabel.setFont(new Font("Consolas", Font.PLAIN, 15));
+    
+            if (processName.equals("IDLE")) {
+                processLabel.setPreferredSize(new Dimension(80 * processedTime, 40));
+                processLabel.setBackground(Color.lightGray);
+                timeLabel.setPreferredSize(new Dimension(80 * processedTime, 30));
+            } else {
+                processLabel.setPreferredSize(new Dimension(50 * processedTime, 40));
+                processLabel.setBackground(new Color(135, 206, 250));
+                timeLabel.setPreferredSize(new Dimension(50 * processedTime, 30));
+            }
+    
+            processPanel.add(processLabel);
             timingPanel.add(timeLabel);
     
             // Update the current time (assuming each block corresponds to 1 time unit)
             currentTime++; // Replace with actual duration of the block if needed
         }
+        JLabel emptyLabelEnd = new JLabel();
+        emptyLabelEnd.setPreferredSize(new Dimension(60, 30));
+        processPanel.add(emptyLabelEnd);
     
         // Add the final time
         JLabel finalTimeLabel = new JLabel(processTimings.get(currentTime));
         finalTimeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         finalTimeLabel.setPreferredSize(new Dimension(60, 20));
+        finalTimeLabel.setFont(new Font("Consolas", Font.PLAIN, 15));
         timingPanel.add(finalTimeLabel);
+    
         // Add sub-panels to Gantt Chart panel
         ganttPanel.add(processPanel);
         ganttPanel.add(timingPanel);
+    
+        // Add Gantt Chart panel to a JScrollPane
+        JScrollPane ganttScrollPane = new JScrollPane(ganttPanel);
+        ganttScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        ganttScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
     
         // Panel for process table
         JPanel tablePanel = new JPanel();
@@ -278,7 +329,11 @@ public class Table {
     
         // Create a JTable for CT, WT, and TAT
         String[] tableColumns = {"Process", "Arrival Time", "Burst Time", "Completion Time", "Turnaround Time", "Waiting Time"};
-        Object[][] tableData = new Object[processes.size()][6];
+        Object[][] tableData = new Object[processes.size() + 2][6]; // Add two extra rows for totals and averages
+    
+        int totalTurnaroundTime = 0;
+        int totalWaitingTime = 0;
+    
         for (int i = 0; i < processes.size(); i++) {
             Process p = processes.get(i);
             tableData[i][0] = p.getName();
@@ -287,21 +342,60 @@ public class Table {
             tableData[i][3] = p.getCompletionTime();
             tableData[i][4] = p.getTurnAroundTime();
             tableData[i][5] = p.getWaitingTime();
+    
+            totalTurnaroundTime += p.getTurnAroundTime();
+            totalWaitingTime += p.getWaitingTime();
+        }
+        
+        double averageTurnaroundTime = (double) totalTurnaroundTime / processes.size();
+        double averageWaitingTime = (double) totalWaitingTime / processes.size();
+
+        // Add Total row
+        tableData[processes.size()][0] = "Total";
+        tableData[processes.size()][1] = "-";
+        tableData[processes.size()][2] = "-";
+        tableData[processes.size()][3] = "-";
+        tableData[processes.size()][4] = totalTurnaroundTime;
+        tableData[processes.size()][5] = totalWaitingTime;
+    
+        // Add Average row
+        tableData[processes.size() + 1][0] = "Average";
+        tableData[processes.size() + 1][1] = "-";
+        tableData[processes.size() + 1][2] = "-";
+        tableData[processes.size() + 1][3] = "-";
+        tableData[processes.size() + 1][4] = String.format("%.2f ms", averageTurnaroundTime);
+        tableData[processes.size() + 1][5] = String.format("%.2f ms", averageWaitingTime);
+    
+        // Create a custom table model to make cells non-editable
+        DefaultTableModel tableModel = new DefaultTableModel(tableData, tableColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // All cells are non-editable
+            }
+        };
+    
+        JTable resultTable = new JTable(tableModel);
+        resultTable.setFont(new Font("Consolas", Font.PLAIN, 16));
+        resultTable.setRowHeight(30);
+    
+        // Center-align the table data
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < resultTable.getColumnCount(); i++) {
+            resultTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     
-        JTable resultTable = new JTable(tableData, tableColumns);
-        resultTable.setFont(new Font("Consolas", Font.PLAIN, 14));
-        resultTable.setRowHeight(25);
         JScrollPane tableScrollPane = new JScrollPane(resultTable);
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
     
         // Add components to the frame
-        resultFrame.add(ganttPanel, BorderLayout.NORTH);
+        resultFrame.add(ganttScrollPane, BorderLayout.NORTH);
         resultFrame.add(tablePanel, BorderLayout.CENTER);
     
         // Display the frame
         resultFrame.setVisible(true);
     }
-        
-
+    
+    
+    
 }
