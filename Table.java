@@ -1,22 +1,24 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 
 public class Table {
-    private JLabel label;
-    private JTable table;
+    final private JLabel label;
+    final private JTable table;
     private DefaultTableModel tableModel;
     private String[] columnNames = {"PROCESS", "ARRIVAL TIME", "BURST TIME", "PRIORITY"};
-    private ArrayList<Process> processes;
-    private ArrayList<String> ganttChart, processTimings;
-    private List<Process> readyProcesses;
-    private int totalProcess, lastAT, firstAT;
+    private ArrayList<Process> processes; // List of processes that are entered in the table
+    private ArrayList<String> ganttChart; //  List of the processes (P1, P2, P3, etc.) that are allocated CPU time during the schedule
+    private ArrayList<String> processTimings; // List of the starting time of each process (act as a parallel array to ganttChart)
+    private List<Process> readyProcesses; // List of processes that are ready to run (Ready Queue)
+    private int totalProcess; // Total number of process that are entered in the table
+    private int lastAT; // Time of a process that arrived at last
+    private int firstAT; // Time of a process that arrived at first
     final int minNumberColumns = 3;
 
-    public Table() {
+    public Table() { // Constructor (will create table)
         tableModel = new DefaultTableModel(columnNames, minNumberColumns);
         table = new JTable(tableModel) {
             @Override
@@ -68,11 +70,11 @@ public class Table {
         return label;
     }
 
-    public JTable getTable() {
+    public JTable getTable() { 
         return table;
     }
 
-    public void addRow() {
+    public void addRow() { // Add row of the table
         int totalRows = table.getRowCount();
         if (totalRows < 10) {
             tableModel.addRow(new Object[]{"", "", "", ""});
@@ -81,7 +83,7 @@ public class Table {
         }
     }
 
-    public void deleteRow() {
+    public void deleteRow() { // Delete row of the table
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(label, "Please select a row to DELETE!", "INFO", JOptionPane.INFORMATION_MESSAGE);
@@ -94,17 +96,17 @@ public class Table {
         }
     }
 
-    public boolean updateProcessData() {
+    public boolean updateProcessData() { // Function that will store the process into the list by creating Process object
         processes = new ArrayList<>();
         int numberRows = table.getRowCount();
         try {
             for (int i = 0; i < numberRows; i++) {
-                int priority = 0;
+                int priority = 0; // Priority will be zero in default
                 Process process;
                 String processName = table.getValueAt(i, 0).toString();
                 int arrivalTime = Integer.parseInt(table.getValueAt(i, 1).toString());
                 int burstTime = Integer.parseInt(table.getValueAt(i, 2).toString());
-                try { // Priority is optional to input
+                try { // Priority column is optional to input
                     priority = Integer.parseInt(table.getValueAt(i, 3).toString());
                 } catch (Exception ex) {}
                 process = new Process(processName, arrivalTime, burstTime, priority); // Creating process objects 
@@ -121,7 +123,7 @@ public class Table {
         }
     }
 
-    private void sortAT(){ // sorting ArrayList processes based on their arrival time
+    private void sortAT(){ // sorting ArrayList processes based on their arrival time 
         int iteration = totalProcess-1;
         for(int i = 0; i < totalProcess; i++){
             for(int j = 0; j < iteration; j++){
@@ -135,18 +137,18 @@ public class Table {
         }
         lastAT = processes.get(totalProcess-1).getArrivalTime();
         firstAT = processes.get(0).getArrivalTime();
-        System.out.printf("High AT: %d", lastAT);
-        System.out.printf("First AT: %d", firstAT);
-        System.out.println("\nSorted Processes:  ");
-        for(Process prs: processes){
-            System.out.println(prs);
-        }
+        // System.out.printf("High AT: %d", lastAT);
+        // System.out.printf("First AT: %d", firstAT);
+        // System.out.println("\nSorted Processes:  ");
+        // for(Process prs: processes){
+        //     System.out.println(prs);
+        // }
         // System.out.printf("Number of processes: %d", totalProcess);
     }
 
-    private void readyQueuing(int T){ // Adding Queue 
+    private void readyQueuing(int T){ // Function that will queue up the processes that are arrived at T(time)
         for(Process prs: processes){
-            if(prs.getArrivalTime() <= T && !readyProcesses.contains(prs) && prs.getBurstTime() > 0){
+            if(prs.getArrivalTime() <= T && !readyProcesses.contains(prs) && prs.getBurstTime() > 0){ 
                 readyProcesses.add(prs);
                 // System.out.println("Added process: " + prs.getName() + " at time " + T);
             }
@@ -238,7 +240,7 @@ public class Table {
         
     }
     
-    public void displayResults() {
+    public void displayResults() { // Will display the Gantt chart and table in the GUI
         // Create a JFrame to display the results
         ImageIcon img = new ImageIcon("CPU.png");
         JFrame resultFrame = new JFrame("Scheduling Results");
