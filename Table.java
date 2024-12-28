@@ -240,6 +240,46 @@ public class Table {
         
     }
     
+    public void NonPreemptivePriority() {
+        int time = 0;
+        ganttChart = new ArrayList<>();
+        processTimings = new ArrayList<>();
+        readyProcesses = new LinkedList<>();
+    
+        sortAT(); // Sort processes by arrival time
+        readyQueuing(time); // Queue up the initial processes
+    
+        processTimings.add(String.valueOf(time));
+        while (processes.stream().anyMatch(p -> p.getBurstTime() > 0)) {
+            if (!readyProcesses.isEmpty()) {
+                // Select the process with the highest priority in the ready queue
+                readyProcesses.sort((p1, p2) -> {
+                    if (p1.getPriority() == p2.getPriority()) {
+                        return Integer.compare(p1.getArrivalTime(), p2.getArrivalTime());
+                    }
+                    return Integer.compare(p1.getPriority(), p2.getPriority());
+                });
+    
+                Process currentProcess = readyProcesses.remove(0); // Dequeue the selected process
+                ganttChart.add(currentProcess.getName());
+                time += currentProcess.getBurstTime(); // Process runs to completion
+                currentProcess.setCompletionTime(time);
+                currentProcess.setTurnAroundTime(currentProcess.getCompletionTime() - currentProcess.getArrivalTime());
+                currentProcess.setWaitingTime(currentProcess.getTurnAroundTime() - currentProcess.getInitialBurstTime());
+                currentProcess.setBurstTime(0); // Mark process as completed
+    
+                readyQueuing(time); // Check for new arrivals at the updated time
+            } else {
+                ganttChart.add("IDLE");
+                time++; // CPU is idle
+                readyQueuing(time); // Check for new arrivals
+            }
+            processTimings.add(String.valueOf(time));
+        }
+        displayResults();
+    }
+    
+
     public void displayResults() { // Will display the Gantt chart and table in the GUI
         // Create a JFrame to display the results
         ImageIcon img = new ImageIcon("CPU.png");

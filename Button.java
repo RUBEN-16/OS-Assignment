@@ -35,7 +35,8 @@ public class Button {
                     JOptionPane.showMessageDialog(null, "SJN - Enoch", "INFO", JOptionPane.INFORMATION_MESSAGE);
                     break;
                 case 3:
-                    JOptionPane.showMessageDialog(null, "Non-Preemptive Priority - Daniel", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                if (table.updateProcessData())
+                table.NonPreemptivePriority();
                     break;
                 default:
                     JOptionPane.showMessageDialog(null, "Invalid Scheduling Algorithm Selected");
