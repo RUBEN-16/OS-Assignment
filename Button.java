@@ -32,7 +32,8 @@ public class Button {
                     JOptionPane.showMessageDialog(null, "SRT - Dharven", "INFO", JOptionPane.INFORMATION_MESSAGE);
                     break;
                 case 2:
-                    JOptionPane.showMessageDialog(null, "SJN - Enoch", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                    if (table.updateProcessData())
+                        table.SJN();
                     break;
                 case 3:
                     if (table.updateProcessData())
