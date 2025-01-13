@@ -29,7 +29,8 @@ public class Button {
                         table.RoundRobin();
                     break;
                 case 1:
-                    JOptionPane.showMessageDialog(null, "SRT - Dharven", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                    if (table.updateProcessData())
+                        table.SRT();                   
                     break;
                 case 2:
                     if (table.updateProcessData())
