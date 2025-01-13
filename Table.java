@@ -280,6 +280,51 @@ public class Table {
         displayResults();
     }
     
+
+    public void SRT() {
+        int time = 0;
+        ganttChart = new ArrayList<>();
+        processTimings = new ArrayList<>();
+        readyProcesses = new LinkedList<>();
+    
+        sortAT(); // Sort processes by arrival time
+        readyQueuing(time); // Queue up the initial processes
+    
+        processTimings.add(String.valueOf(time));
+        while (processes.stream().anyMatch(p -> p.getBurstTime() > 0)) {
+            readyProcesses.sort(Comparator.comparingInt(Process::getBurstTime)
+                                          .thenComparingInt(Process::getArrivalTime));
+            
+            if (!readyProcesses.isEmpty()) {
+                Process currentProcess = readyProcesses.get(0); // Select process with the shortest remaining time
+                ganttChart.add(currentProcess.getName());
+                
+                // Execute process for 1 unit of time
+                time++;
+                currentProcess.setBurstTime(currentProcess.getBurstTime() - 1);
+                
+                if (currentProcess.getBurstTime() == 0) {
+                    // Process completion
+                    currentProcess.setCompletionTime(time);
+                    currentProcess.setTurnAroundTime(currentProcess.getCompletionTime() - currentProcess.getArrivalTime());
+                    currentProcess.setWaitingTime(currentProcess.getTurnAroundTime() - currentProcess.getInitialBurstTime());
+                    readyProcesses.remove(currentProcess);
+                }
+                
+                // Queue up new processes that have arrived at the current time
+                readyQueuing(time);
+            } else {
+                // CPU is idle
+                ganttChart.add("IDLE");
+                time++;
+                readyQueuing(time);
+            }
+            processTimings.add(String.valueOf(time));
+        }
+        displayResults();
+    }
+    
+
     public void NonPreemptivePriority() {
         int time = 0;
         ganttChart = new ArrayList<>();
