@@ -223,7 +223,7 @@ public class Table {
         // for(String t: processTimings){
         //     System.out.printf("%s ", t);
         // }
-        displayResults();
+        displayResults("Round Robin");
         
         // // Display Gantt Chart in terminal (use when u want to check)
         // System.out.println("");
@@ -277,7 +277,7 @@ public class Table {
             }
             processTimings.add(String.valueOf(time));
         }
-        displayResults();
+        displayResults("Shortest Job Next");
     }
     
 
@@ -321,7 +321,7 @@ public class Table {
             }
             processTimings.add(String.valueOf(time));
         }
-        displayResults();
+        displayResults("Shortest Remaining Time");
     }
     
 
@@ -361,14 +361,14 @@ public class Table {
             }
             processTimings.add(String.valueOf(time));
         }
-        displayResults();
+        displayResults("Non-Preemptive Priority");
     }
     
 
-    public void displayResults() { // Will display the Gantt chart and table in the GUI
+    public void displayResults(String AlgoName) { // Will display the Gantt chart and table in the GUI
         // Create a JFrame to display the results
         ImageIcon img = new ImageIcon("CPU.png");
-        JFrame resultFrame = new JFrame("Scheduling Results");
+        JFrame resultFrame = new JFrame(AlgoName + " Scheduling Results");
         resultFrame.setSize(1500, 700);
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         resultFrame.setLayout(new BorderLayout());
